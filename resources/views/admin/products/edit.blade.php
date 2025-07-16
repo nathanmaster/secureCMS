@@ -73,6 +73,53 @@
                             @enderror
                         </div>
 
+                        <!-- Weight -->
+                        <div>
+                            <label for="weight" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Weight (grams)
+                            </label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <input type="number" 
+                                       name="weight" 
+                                       id="weight" 
+                                       value="{{ old('weight', $product->weight) }}"
+                                       step="0.01"
+                                       min="0"
+                                       class="block w-full pr-12 border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                                       placeholder="0.00">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 text-sm">g</span>
+                                </div>
+                            </div>
+                            @error('weight')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Percentage -->
+                        <div>
+                            <label for="percentage" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Percentage
+                            </label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <input type="number" 
+                                       name="percentage" 
+                                       id="percentage" 
+                                       value="{{ old('percentage', $product->percentage) }}"
+                                       step="0.01"
+                                       min="0"
+                                       max="100"
+                                       class="block w-full pr-12 border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                                       placeholder="0.00">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 text-sm">%</span>
+                                </div>
+                            </div>
+                            @error('percentage')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <!-- Category -->
                         <div>
                             <label for="category_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -90,6 +137,26 @@
                                 @endforeach
                             </select>
                             @error('category_id')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Subcategory -->
+                        <div>
+                            <label for="subcategory_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Subcategory
+                            </label>
+                            <select name="subcategory_id" 
+                                    id="subcategory_id"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white">
+                                <option value="">Select a subcategory</option>
+                                @foreach($subcategories ?? [] as $subcategory)
+                                    <option value="{{ $subcategory->id }}" {{ old('subcategory_id', $product->subcategory_id) == $subcategory->id ? 'selected' : '' }}>
+                                        {{ $subcategory->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('subcategory_id')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>

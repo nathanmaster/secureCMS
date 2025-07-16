@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MenuController;
@@ -13,6 +15,11 @@ Route::get('/', [MenuController::class, 'index'])->name('menu');
 
 // Product detail route for all users (guests and logged in)
 Route::get('/product/{product}', [MenuController::class, 'show'])->name('product.show');
+
+// Product comments and ratings (authenticated users only)
+Route::middleware('auth')->group(function () {
+    Route::post('/product/{product}/comment', [MenuController::class, 'storeComment'])->name('product.comment');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -49,6 +56,23 @@ Route::middleware(['auth', 'admin'])->group(function () {
         'update' => 'admin.categories.update',
         'destroy' => 'admin.categories.destroy',
     ]);
+    
+    // Subcategory Management Routes
+    Route::resource('admin/subcategories', SubcategoryController::class)->names([
+        'index' => 'admin.subcategories.index',
+        'create' => 'admin.subcategories.create',
+        'store' => 'admin.subcategories.store',
+        'show' => 'admin.subcategories.show',
+        'edit' => 'admin.subcategories.edit',
+        'update' => 'admin.subcategories.update',
+        'destroy' => 'admin.subcategories.destroy',
+    ]);
+    
+    // Comment Management Routes
+    Route::get('admin/comments', [CommentController::class, 'index'])->name('admin.comments.index');
+    Route::patch('admin/comments/{comment}/approve', [CommentController::class, 'approve'])->name('admin.comments.approve');
+    Route::patch('admin/comments/{comment}/unapprove', [CommentController::class, 'unapprove'])->name('admin.comments.unapprove');
+    Route::delete('admin/comments/{comment}', [CommentController::class, 'destroy'])->name('admin.comments.destroy');
 });
 
 require __DIR__.'/auth.php';

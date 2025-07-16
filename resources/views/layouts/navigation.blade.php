@@ -24,6 +24,12 @@
                     <x-nav-link :href="route('admin.categories.index')" :active="request()->routeIs('admin.categories.*')">
                         {{ __('Categories') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('admin.subcategories.index')" :active="request()->routeIs('admin.subcategories.*')">
+                        {{ __('Subcategories') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.comments.index')" :active="request()->routeIs('admin.comments.*')">
+                        {{ __('Comments') }}
+                    </x-nav-link>
                 </div>
             </div>
 

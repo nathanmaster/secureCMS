@@ -8,7 +8,8 @@ $colorClasses = [
     'red' => 'bg-red-500',
     'purple' => 'bg-purple-500',
     'indigo' => 'bg-indigo-500',
-    'gray' => 'bg-gray-500'
+    'gray' => 'bg-gray-500',
+    'teal' => 'bg-teal-500'
 ];
 @endphp
 

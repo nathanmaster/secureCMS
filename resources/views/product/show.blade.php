@@ -60,6 +60,13 @@
     <!-- Main Content -->
     <div class="container mx-auto px-4 py-8">
         <div class="max-w-4xl mx-auto">
+            <!-- Success Message -->
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                    {{ session('success') }}
+                </div>
+            @endif
+            
             <!-- Back to Menu Button -->
             <div class="mb-6">
                 <a href="{{ route('menu') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
@@ -75,15 +82,18 @@
                 <div class="md:flex">
                     <!-- Product Image -->
                     <div class="md:w-1/2 relative">
-                        @if($product->hasImage())
-                            <img src="{{ $product->image_url }}" 
+                        @if($product->image_path)
+                            <img src="{{ asset('storage/' . $product->image_path) }}" 
                                  alt="{{ $product->name }}" 
                                  class="w-full h-96 object-cover {{ !$product->is_available ? 'grayscale' : '' }}">
                         @else
-                            <div class="w-full h-96 bg-gray-200 flex items-center justify-center {{ !$product->is_available ? 'grayscale' : '' }}">
-                                <svg class="w-32 h-32 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
+                            <div class="w-full h-96 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center {{ !$product->is_available ? 'grayscale' : '' }}">
+                                <div class="text-center">
+                                    <svg class="w-24 h-24 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <p class="text-gray-500 text-lg">No Image Available</p>
+                                </div>
                             </div>
                         @endif
                         
@@ -107,9 +117,50 @@
 
                         <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ $product->name }}</h1>
                         
-                        <div class="text-2xl font-bold text-green-600 mb-6">
+                        <div class="text-2xl font-bold text-green-600 mb-4">
                             ${{ number_format($product->price, 2) }}
                         </div>
+
+                        <!-- Weight -->
+                        @if($product->weight)
+                            <div class="mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Weight</h3>
+                                <p class="text-gray-700">{{ $product->formatted_weight }}</p>
+                            </div>
+                        @endif
+
+                        <!-- Percentage -->
+                        @if($product->percentage)
+                            <div class="mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Percentage</h3>
+                                <p class="text-gray-700">{{ $product->formatted_percentage }}</p>
+                            </div>
+                        @endif
+
+                        <!-- Rating -->
+                        @if($product->ratings_count > 0)
+                            <div class="mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">Rating</h3>
+                                <div class="flex items-center">
+                                    <div class="flex items-center">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            @if($i <= $product->average_rating)
+                                                <svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                </svg>
+                                            @else
+                                                <svg class="w-5 h-5 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                </svg>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    <span class="text-gray-600 ml-2">
+                                        {{ number_format($product->average_rating, 1) }} out of 5 ({{ $product->ratings_count }} {{ Str::plural('review', $product->ratings_count) }})
+                                    </span>
+                                </div>
+                            </div>
+                        @endif
 
                         @if($product->description)
                             <div class="mb-6">
@@ -150,13 +201,92 @@
                                 </button>
                             @endif
                             
-                            <button class="border border-gray-300 text-gray-700 px-6 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium">
+                            {{-- Share functionality not implemented yet --}}
+                            {{-- <button class="border border-gray-300 text-gray-700 px-6 py-3 rounded-md hover:bg-gray-50 transition-colors font-medium">
                                 Share
-                            </button>
+                            </button> --}}
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Comments and Ratings Section -->
+            @auth
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Reviews & Comments</h2>
+                    
+                    <!-- Add Rating/Comment Form -->
+                    <div class="border-b border-gray-200 pb-6 mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Leave a Review</h3>
+                        <form action="{{ route('product.comment', $product) }}" method="POST" class="space-y-4">
+                            @csrf
+                            
+                            <!-- Rating -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Your Rating</label>
+                                <div class="flex items-center space-x-1">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <input type="radio" name="rating" value="{{ $i }}" id="star-{{ $i }}" class="hidden" />
+                                        <label for="star-{{ $i }}" class="cursor-pointer">
+                                            <svg class="w-6 h-6 text-gray-300 hover:text-yellow-400 fill-current star-rating" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                            </svg>
+                                        </label>
+                                    @endfor
+                                </div>
+                            </div>
+                            
+                            <!-- Comment -->
+                            <div>
+                                <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Your Comment</label>
+                                <textarea name="comment" id="comment" rows="4" 
+                                          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          placeholder="Share your thoughts about this product..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium">
+                                Submit Review
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Existing Comments -->
+                    @if($product->approvedComments->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($product->approvedComments as $comment)
+                                <div class="border-b border-gray-100 pb-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center">
+                                            <h4 class="font-semibold text-gray-900">{{ $comment->user->name }}</h4>
+                                            @if($comment->user->ratings()->where('product_id', $product->id)->exists())
+                                                <div class="flex items-center ml-4">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        @if($i <= $comment->user->ratings()->where('product_id', $product->id)->first()->rating)
+                                                            <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                            </svg>
+                                                        @else
+                                                            <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                            </svg>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <span class="text-sm text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    <p class="text-gray-700">{{ $comment->comment }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-8 text-gray-500">
+                            <p>No reviews yet. Be the first to review this product!</p>
+                        </div>
+                    @endif
+                </div>
+            @endauth
 
             <!-- Related Products (if same category) -->
             @if($product->category)
@@ -174,15 +304,18 @@
                             @foreach($relatedProducts as $relatedProduct)
                                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow {{ !$relatedProduct->is_available ? 'opacity-75' : '' }}">
                                     <div class="relative">
-                                        @if($relatedProduct->hasImage())
-                                            <img src="{{ $relatedProduct->image_url }}" 
+                                        @if($relatedProduct->image_path)
+                                            <img src="{{ asset('storage/' . $relatedProduct->image_path) }}" 
                                                  alt="{{ $relatedProduct->name }}" 
                                                  class="w-full h-48 object-cover {{ !$relatedProduct->is_available ? 'grayscale' : '' }}">
                                         @else
-                                            <div class="w-full h-48 bg-gray-200 flex items-center justify-center {{ !$relatedProduct->is_available ? 'grayscale' : '' }}">
-                                                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                                </svg>
+                                            <div class="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center {{ !$relatedProduct->is_available ? 'grayscale' : '' }}">
+                                                <div class="text-center">
+                                                    <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                    <p class="text-gray-500 text-xs">No Image</p>
+                                                </div>
                                             </div>
                                         @endif
                                         
@@ -222,5 +355,67 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        // Star rating functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.star-rating');
+            const ratingInputs = document.querySelectorAll('input[name="rating"]');
+            
+            stars.forEach((star, index) => {
+                star.addEventListener('click', function() {
+                    const rating = index + 1;
+                    ratingInputs[index].checked = true;
+                    
+                    // Update star colors
+                    stars.forEach((s, i) => {
+                        if (i < rating) {
+                            s.classList.remove('text-gray-300');
+                            s.classList.add('text-yellow-400');
+                        } else {
+                            s.classList.remove('text-yellow-400');
+                            s.classList.add('text-gray-300');
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseover', function() {
+                    const rating = index + 1;
+                    stars.forEach((s, i) => {
+                        if (i < rating) {
+                            s.classList.add('text-yellow-400');
+                        } else {
+                            s.classList.remove('text-yellow-400');
+                        }
+                    });
+                });
+            });
+            
+            // Reset on mouse leave
+            const ratingContainer = document.querySelector('.star-rating').closest('.flex');
+            if (ratingContainer) {
+                ratingContainer.addEventListener('mouseleave', function() {
+                    const checkedRating = document.querySelector('input[name="rating"]:checked');
+                    if (checkedRating) {
+                        const rating = parseInt(checkedRating.value);
+                        stars.forEach((s, i) => {
+                            if (i < rating) {
+                                s.classList.add('text-yellow-400');
+                                s.classList.remove('text-gray-300');
+                            } else {
+                                s.classList.add('text-gray-300');
+                                s.classList.remove('text-yellow-400');
+                            }
+                        });
+                    } else {
+                        stars.forEach(s => {
+                            s.classList.add('text-gray-300');
+                            s.classList.remove('text-yellow-400');
+                        });
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

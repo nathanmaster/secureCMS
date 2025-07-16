@@ -78,6 +78,11 @@
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                                         {{ $product->category->name }}
                                     </span>
+                                    @if($product->subcategory)
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                                            {{ $product->subcategory->name }}
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
 
@@ -87,6 +92,26 @@
                                 <p class="text-4xl font-bold text-green-600 dark:text-green-400">
                                     ${{ number_format($product->price, 2) }}
                                 </p>
+                            </div>
+
+                            <!-- Weight and Percentage -->
+                            <div class="grid grid-cols-2 gap-4">
+                                @if($product->weight)
+                                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Weight</h3>
+                                        <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                                            {{ $product->formatted_weight }}
+                                        </p>
+                                    </div>
+                                @endif
+                                @if($product->percentage)
+                                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Percentage</h3>
+                                        <p class="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                                            {{ $product->formatted_percentage }}
+                                        </p>
+                                    </div>
+                                @endif
                             </div>
 
                             <!-- Description -->

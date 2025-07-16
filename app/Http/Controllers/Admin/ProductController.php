@@ -26,8 +26,9 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::orderBy('name')->get();
+        $subcategories = \App\Models\Subcategory::orderBy('name')->get();
         
-        return view('admin.products.create', compact('categories'));
+        return view('admin.products.create', compact('categories', 'subcategories'));
     }
 
     /**
@@ -39,12 +40,15 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'weight' => 'nullable|numeric|min:0',
+            'percentage' => 'nullable|numeric|min:0|max:100',
             'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB max
             'is_available' => 'boolean',
         ]);
 
-        $data = $request->only(['name', 'description', 'price', 'category_id']);
+        $data = $request->only(['name', 'description', 'price', 'weight', 'percentage', 'category_id', 'subcategory_id']);
         $data['is_available'] = $request->has('is_available');
 
         // Handle image upload
@@ -76,8 +80,9 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::orderBy('name')->get();
+        $subcategories = \App\Models\Subcategory::orderBy('name')->get();
         
-        return view('admin.products.edit', compact('product', 'categories'));
+        return view('admin.products.edit', compact('product', 'categories', 'subcategories'));
     }
 
     /**
@@ -89,12 +94,15 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'weight' => 'nullable|numeric|min:0',
+            'percentage' => 'nullable|numeric|min:0|max:100',
             'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240', // 10MB max
             'is_available' => 'boolean',
         ]);
 
-        $data = $request->only(['name', 'description', 'price', 'category_id']);
+        $data = $request->only(['name', 'description', 'price', 'weight', 'percentage', 'category_id', 'subcategory_id']);
         $data['is_available'] = $request->has('is_available');
 
         // Handle image upload

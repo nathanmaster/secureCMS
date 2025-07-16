@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\ProductComment;
+use App\Models\ProductRating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +20,10 @@ class DashboardController extends Controller
             'total_users' => User::count(),
             'total_categories' => Category::count(),
             'active_products' => Product::where('is_available', true)->count(),
+            'total_comments' => ProductComment::count(),
+            'pending_comments' => ProductComment::where('is_approved', false)->count(),
+            'total_ratings' => ProductRating::count(),
+            'average_rating' => ProductRating::avg('rating') ?? 0,
         ];
 
         // Get recent activity (last 10 activities)
@@ -69,9 +75,44 @@ class DashboardController extends Controller
                 ];
             });
 
+        // Recent comments
+        $recentComments = ProductComment::with(['user', 'product'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function ($comment) {
+                return [
+                    'type' => 'comment',
+                    'action' => $comment->is_approved ? 'approved' : 'pending',
+                    'description' => $comment->user->name . ' commented on "' . $comment->product->name . '"',
+                    'user' => $comment->user->name,
+                    'status' => $comment->is_approved ? 'success' : 'warning',
+                    'created_at' => $comment->created_at,
+                ];
+            });
+
+        // Recent ratings
+        $recentRatings = ProductRating::with(['user', 'product'])
+            ->latest()
+            ->take(3)
+            ->get()
+            ->map(function ($rating) {
+                return [
+                    'type' => 'rating',
+                    'action' => 'rated',
+                    'description' => $rating->user->name . ' rated "' . $rating->product->name . '" (' . $rating->rating . ' stars)',
+                    'user' => $rating->user->name,
+                    'status' => 'success',
+                    'created_at' => $rating->created_at,
+                ];
+            });
+
         // Combine and sort activities
         $recentActivity = $recentProducts
             ->concat($recentUsers)
+            ->concat($recentCategories)
+            ->concat($recentComments)
+            ->concat($recentRatings)
             ->concat($recentCategories)
             ->sortByDesc('created_at')
             ->take(10);
