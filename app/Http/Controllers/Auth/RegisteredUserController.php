@@ -45,6 +45,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // New users are not admin by default, redirect to menu
+        return redirect(route('menu', absolute: false));
     }
 }

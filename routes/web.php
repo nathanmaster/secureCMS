@@ -4,16 +4,15 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Default route - Menu page for all users (guests and logged in)
+Route::get('/', [MenuController::class, 'index'])->name('menu');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+// Product detail route for all users (guests and logged in)
+Route::get('/product/{product}', [MenuController::class, 'show'])->name('product.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -22,10 +21,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'admin'])->group(function () {
-    // Admin routes go here
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+    // Admin dashboard - only accessible to admin users
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     
     // User Management Routes
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');

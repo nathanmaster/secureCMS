@@ -17,7 +17,22 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    // Regular users should be redirected to menu
+    $response->assertRedirect(route('menu', absolute: false));
+});
+
+test('admin users can authenticate and are redirected to admin dashboard', function () {
+    $user = User::factory()->create([
+        'is_admin' => true,
+    ]);
+
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticated();
+    $response->assertRedirect(route('admin.dashboard', absolute: false));
 });
 
 test('users can not authenticate with invalid password', function () {

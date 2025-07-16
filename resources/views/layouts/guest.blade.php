@@ -27,7 +27,7 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
             <!-- Logo -->
             <div class="mb-6">
-                <a href="{{ route('dashboard') }}" class="flex items-center">
+                <a href="{{ route('menu') }}" class="flex items-center">
                     <x-application-logo class="w-16 h-16 fill-current text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors" />
                     <span class="ml-3 text-xl font-bold text-gray-900 dark:text-gray-100">{{ config('app.name', 'SecureCMS') }}</span>
                 </a>
