@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }} - Menu</title>
+    <title>{{ config('app.name', 'SecureCMS') }} - Menu</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -14,46 +14,69 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
-    <!-- Custom styles for price slider -->
+    <!-- Custom styles for dual range slider and dark mode -->
     <style>
-        .slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            height: 8px;
-            border-radius: 4px;
-            background: #e5e7eb;
+        /* Dual Range Slider */
+        .dual-range-slider {
+            position: relative;
+            width: 100%;
+            height: 6px;
+            background: #374151;
+            border-radius: 3px;
             outline: none;
-            cursor: pointer;
         }
         
-        .slider-thumb::-webkit-slider-thumb {
+        .dual-range-slider input[type="range"] {
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            background: transparent;
+            -webkit-appearance: none;
+            appearance: none;
+            pointer-events: none;
+            outline: none;
+        }
+        
+        .dual-range-slider input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #2563eb;
+            background: #3b82f6;
             cursor: pointer;
             border: 2px solid #ffffff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            pointer-events: auto;
+            position: relative;
+            z-index: 2;
         }
         
-        .slider-thumb::-moz-range-thumb {
+        .dual-range-slider input[type="range"]::-moz-range-thumb {
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: #2563eb;
+            background: #3b82f6;
             cursor: pointer;
             border: 2px solid #ffffff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            pointer-events: auto;
         }
         
-        .slider-thumb:hover::-webkit-slider-thumb {
-            background: #1d4ed8;
+        .dual-range-slider input[type="range"]:hover::-webkit-slider-thumb {
+            background: #2563eb;
         }
         
-        .slider-thumb:hover::-moz-range-thumb {
-            background: #1d4ed8;
+        .dual-range-slider input[type="range"]:hover::-moz-range-thumb {
+            background: #2563eb;
+        }
+        
+        .dual-range-slider .slider-track {
+            position: absolute;
+            height: 6px;
+            background: #3b82f6;
+            border-radius: 3px;
+            pointer-events: none;
         }
         
         .line-clamp-2 {
@@ -62,9 +85,151 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+        
+        /* Dark Mode Styles */
+        .dark {
+            background-color: #111827;
+            color: #f9fafb;
+        }
+        
+        .dark .bg-gray-50 {
+            background-color: #111827;
+        }
+        
+        .dark .bg-white {
+            background-color: #1f2937;
+        }
+        
+        .dark .text-gray-900 {
+            color: #f9fafb;
+        }
+        
+        .dark .text-gray-800 {
+            color: #f3f4f6;
+        }
+        
+        .dark .text-gray-700 {
+            color: #d1d5db;
+        }
+        
+        .dark .text-gray-600 {
+            color: #9ca3af;
+        }
+        
+        .dark .text-gray-500 {
+            color: #6b7280;
+        }
+        
+        .dark .text-gray-400 {
+            color: #9ca3af;
+        }
+        
+        .dark .border-gray-300 {
+            border-color: #4b5563;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: #374151;
+        }
+        
+        .dark .bg-gray-100 {
+            background-color: #374151;
+        }
+        
+        .dark .bg-gray-200 {
+            background-color: #4b5563;
+        }
+        
+        .dark .bg-blue-50 {
+            background-color: #1e3a8a;
+        }
+        
+        .dark .bg-blue-100 {
+            background-color: #1e40af;
+        }
+        
+        .dark .text-blue-800 {
+            color: #dbeafe;
+        }
+        
+        .dark .text-blue-900 {
+            color: #dbeafe;
+        }
+        
+        .dark .border-blue-200 {
+            border-color: #1e40af;
+        }
+        
+        .dark .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.16);
+        }
+        
+        .dark .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.16);
+        }
+        
+        .dark .bg-gray-800 {
+            background-color: #111827;
+        }
+        
+        .dark .bg-gray-50:hover {
+            background-color: #374151;
+        }
+        
+        .dark .hover\:bg-gray-100:hover {
+            background-color: #4b5563;
+        }
+        
+        .dark input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .dark select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Form Fields Dark Mode */
+        .dark input[type="text"],
+        .dark input[type="number"],
+        .dark input[type="range"],
+        .dark select {
+            background-color: #374151;
+            color: #f9fafb;
+            border-color: #4b5563;
+        }
+        
+        .dark input[type="text"]:focus,
+        .dark input[type="number"]:focus,
+        .dark select:focus {
+            background-color: #4b5563;
+            color: #f9fafb;
+            border-color: #3b82f6;
+        }
+        
+        .dark input[type="text"]::placeholder,
+        .dark input[type="number"]::placeholder {
+            color: #9ca3af;
+        }
+        
+        .dark input[type="checkbox"] {
+            background-color: #374151;
+            border-color: #4b5563;
+        }
+        
+        .dark input[type="checkbox"]:checked {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        
+        .dark select option {
+            background-color: #374151;
+            color: #f9fafb;
+        }
     </style>
 </head>
-<body class="font-sans antialiased bg-gray-50">
+<body class="font-sans antialiased bg-gray-50 dark">>
     <!-- Navigation -->
     <nav class="bg-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -117,8 +282,36 @@
             </p>
         </div>
 
-        <!-- Filters at Top -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <!-- Filter Toggle and View Mode -->
+        <div class="flex justify-between items-center mb-6">
+            <button id="filter-toggle" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
+                </svg>
+                Filters
+            </button>
+            
+            <div class="flex items-center space-x-4">
+                <form method="GET" action="{{ route('menu') }}" class="inline">
+                    @foreach(request()->except('view_mode') as $key => $value)
+                        @if(is_array($value))
+                            @foreach($value as $v)
+                                <input type="hidden" name="{{ $key }}[]" value="{{ $v }}">
+                            @endforeach
+                        @else
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+                    <select name="view_mode" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="grid" {{ request('view_mode', 'grid') == 'grid' ? 'selected' : '' }}>Grid View</option>
+                        <option value="list" {{ request('view_mode') == 'list' ? 'selected' : '' }}>List View</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        <!-- Collapsible Filters -->
+        <div id="filter-panel" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
             <form method="GET" action="{{ route('menu') }}" class="space-y-6">
                 <!-- First Row: Search and Category -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -162,23 +355,20 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-3">Price Range</label>
                         <div class="px-3">
-                            <div class="flex items-center space-x-4 mb-2">
-                                <span class="text-sm text-gray-600">$0</span>
-                                <div class="flex-1 relative">
+                            <div class="mb-4">
+                                <div class="dual-range-slider">
+                                    <div class="slider-track" id="slider-track"></div>
                                     <input type="range" name="min_price" id="min_price_slider" 
                                            min="0" max="{{ $priceRange->max_price }}" 
-                                           value="{{ $minPrice ?? 0 }}" step="0.01"
-                                           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                           value="{{ $minPrice ?? 0 }}" step="0.01">
                                     <input type="range" name="max_price" id="max_price_slider" 
                                            min="0" max="{{ $priceRange->max_price }}" 
-                                           value="{{ $maxPrice ?? $priceRange->max_price }}" step="0.01"
-                                           class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb absolute top-0">
+                                           value="{{ $maxPrice ?? $priceRange->max_price }}" step="0.01">
                                 </div>
-                                <span class="text-sm text-gray-600">${{ number_format($priceRange->max_price, 0) }}</span>
                             </div>
                             <div class="flex justify-between text-sm text-gray-700">
-                                <span>Min: $<span id="min_price_display">{{ $minPrice ?? 0 }}</span></span>
-                                <span>Max: $<span id="max_price_display">{{ $maxPrice ?? $priceRange->max_price }}</span></span>
+                                <span>$<span id="min_price_display">{{ $minPrice ?? 0 }}</span></span>
+                                <span>$<span id="max_price_display">{{ $maxPrice ?? $priceRange->max_price }}</span></span>
                             </div>
                         </div>
                     </div>
@@ -249,7 +439,7 @@
                 </div>
 
                 <!-- Fourth Row: Sort Options and Buttons -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                     <div>
                         <label for="sort_by" class="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
                         <select name="sort_by" id="sort_by" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -266,14 +456,6 @@
                         <select name="sort_direction" id="sort_direction" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="asc" {{ $sortDirection == 'asc' ? 'selected' : '' }}>Ascending</option>
                             <option value="desc" {{ $sortDirection == 'desc' ? 'selected' : '' }}>Descending</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">View Mode</label>
-                        <select name="view_mode" id="view_mode" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="grid" {{ request('view_mode', 'grid') == 'grid' ? 'selected' : '' }}>Grid View</option>
-                            <option value="list" {{ request('view_mode') == 'list' ? 'selected' : '' }}>List View</option>
                         </select>
                     </div>
                     
@@ -774,35 +956,48 @@
             const categorySelect = document.getElementById('category');
             const subcategorySelect = document.getElementById('subcategory');
             const searchInput = document.getElementById('search');
-            const form = document.querySelector('form');
+            const form = document.querySelector('#filter-panel form');
             const minPriceSlider = document.getElementById('min_price_slider');
             const maxPriceSlider = document.getElementById('max_price_slider');
             const minPriceDisplay = document.getElementById('min_price_display');
             const maxPriceDisplay = document.getElementById('max_price_display');
+            const sliderTrack = document.getElementById('slider-track');
+            const filterToggle = document.getElementById('filter-toggle');
+            const filterPanel = document.getElementById('filter-panel');
             
             // Store all subcategories
             const allSubcategories = @json($allSubcategories);
             
-            // Update subcategories when category changes
-            categorySelect.addEventListener('change', function() {
-                const selectedCategoryId = this.value;
-                const filteredSubcategories = selectedCategoryId ? 
-                    allSubcategories.filter(sub => sub.category_id == selectedCategoryId) : 
-                    allSubcategories;
-                
-                // Clear and repopulate subcategory options
-                subcategorySelect.innerHTML = '<option value="">All Subcategories</option>';
-                filteredSubcategories.forEach(sub => {
-                    const option = document.createElement('option');
-                    option.value = sub.id;
-                    option.textContent = sub.name;
-                    subcategorySelect.appendChild(option);
-                });
+            // Filter panel toggle
+            filterToggle.addEventListener('click', function() {
+                filterPanel.classList.toggle('hidden');
             });
             
-            // Price slider functionality
-            if (minPriceSlider && maxPriceSlider) {
-                function updatePriceDisplay() {
+            // Update subcategories when category changes
+            if (categorySelect && subcategorySelect) {
+                categorySelect.addEventListener('change', function() {
+                    const selectedCategoryId = this.value;
+                    const filteredSubcategories = selectedCategoryId ? 
+                        allSubcategories.filter(sub => sub.category_id == selectedCategoryId) : 
+                        allSubcategories;
+                    
+                    // Clear and repopulate subcategory options
+                    subcategorySelect.innerHTML = '<option value="">All Subcategories</option>';
+                    filteredSubcategories.forEach(sub => {
+                        const option = document.createElement('option');
+                        option.value = sub.id;
+                        option.textContent = sub.name;
+                        subcategorySelect.appendChild(option);
+                    });
+                });
+            }
+            
+            // Dual range slider functionality
+            if (minPriceSlider && maxPriceSlider && sliderTrack) {
+                const minRange = parseFloat(minPriceSlider.min);
+                const maxRange = parseFloat(minPriceSlider.max);
+                
+                function updateSlider() {
                     const minValue = parseFloat(minPriceSlider.value);
                     const maxValue = parseFloat(maxPriceSlider.value);
                     
@@ -815,78 +1010,76 @@
                         maxPriceSlider.value = minValue;
                     }
                     
+                    // Update displays
                     minPriceDisplay.textContent = minPriceSlider.value;
                     maxPriceDisplay.textContent = maxPriceSlider.value;
+                    
+                    // Update visual track
+                    const percentMin = ((minPriceSlider.value - minRange) / (maxRange - minRange)) * 100;
+                    const percentMax = ((maxPriceSlider.value - minRange) / (maxRange - minRange)) * 100;
+                    
+                    sliderTrack.style.left = percentMin + '%';
+                    sliderTrack.style.width = (percentMax - percentMin) + '%';
                 }
                 
-                minPriceSlider.addEventListener('input', updatePriceDisplay);
-                maxPriceSlider.addEventListener('input', updatePriceDisplay);
+                minPriceSlider.addEventListener('input', updateSlider);
+                maxPriceSlider.addEventListener('input', updateSlider);
+                
+                // Initialize slider
+                updateSlider();
                 
                 // Auto-submit form when price sliders change
                 minPriceSlider.addEventListener('change', function() {
-                    form.submit();
+                    if (form) form.submit();
                 });
                 maxPriceSlider.addEventListener('change', function() {
-                    form.submit();
+                    if (form) form.submit();
                 });
             }
             
             // Auto-submit form on search input with debounce
-            let searchTimeout;
-            searchInput.addEventListener('input', function() {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    form.submit();
-                }, 500);
-            });
+            if (searchInput && form) {
+                let searchTimeout;
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        form.submit();
+                    }, 500);
+                });
+            }
             
             // Auto-submit form on select changes
-            const selects = document.querySelectorAll('select');
-            selects.forEach(select => {
-                select.addEventListener('change', function() {
-                    form.submit();
+            if (form) {
+                const selects = form.querySelectorAll('select');
+                selects.forEach(select => {
+                    select.addEventListener('change', function() {
+                        form.submit();
+                    });
                 });
-            });
-            
-            // Auto-submit form on checkbox changes
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    form.submit();
+                
+                // Auto-submit form on checkbox changes
+                const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        form.submit();
+                    });
                 });
-            });
+            }
             
             // Keyboard shortcut for search (Ctrl+K)
             document.addEventListener('keydown', function(e) {
                 if (e.ctrlKey && e.key === 'k') {
                     e.preventDefault();
-                    searchInput.focus();
-                    searchInput.select();
+                    if (searchInput) {
+                        searchInput.focus();
+                        searchInput.select();
+                    }
                 }
             });
             
             // Focus search input if it has a value
-            if (searchInput.value) {
+            if (searchInput && searchInput.value) {
                 searchInput.focus();
-            }
-            
-            // Mobile filter toggle
-            const mobileFilterToggle = document.getElementById('mobile-filter-toggle');
-            const mobileFilterClose = document.getElementById('mobile-filter-close');
-            const filterSidebar = document.getElementById('filter-sidebar');
-            
-            if (mobileFilterToggle) {
-                mobileFilterToggle.addEventListener('click', function() {
-                    filterSidebar.classList.remove('hidden');
-                    filterSidebar.classList.add('fixed', 'inset-0', 'z-50', 'bg-white', 'overflow-y-auto');
-                });
-            }
-            
-            if (mobileFilterClose) {
-                mobileFilterClose.addEventListener('click', function() {
-                    filterSidebar.classList.add('hidden');
-                    filterSidebar.classList.remove('fixed', 'inset-0', 'z-50', 'bg-white', 'overflow-y-auto');
-                });
             }
         });
     </script>
