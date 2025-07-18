@@ -69,6 +69,22 @@ class Product extends Model
     }
 
     /**
+     * Get the weight variants for the product.
+     */
+    public function weightVariants(): HasMany
+    {
+        return $this->hasMany(ProductWeightVariant::class);
+    }
+
+    /**
+     * Get available weight variants for the product.
+     */
+    public function availableWeightVariants(): HasMany
+    {
+        return $this->hasMany(ProductWeightVariant::class)->where('is_available', true);
+    }
+
+    /**
      * Get the full URL to the product image.
      */
     public function getImageUrlAttribute(): ?string
@@ -138,5 +154,75 @@ class Product extends Model
         }
         
         return number_format($this->percentage, 1) . '%';
+    }
+
+    /**
+     * Get the base price (lowest price among variants or fallback to main price).
+     */
+    public function getBasePriceAttribute(): float
+    {
+        $lowestVariantPrice = $this->availableWeightVariants()->min('price');
+        
+        if ($lowestVariantPrice !== null) {
+            return $lowestVariantPrice;
+        }
+        
+        return $this->price;
+    }
+
+    /**
+     * Get price range display for products with multiple variants.
+     */
+    public function getPriceRangeAttribute(): string
+    {
+        $variants = $this->availableWeightVariants;
+        
+        if ($variants->isEmpty()) {
+            return '$' . number_format($this->price, 2);
+        }
+        
+        $minPrice = $variants->min('price');
+        $maxPrice = $variants->max('price');
+        
+        if ($minPrice == $maxPrice) {
+            return '$' . number_format($minPrice, 2);
+        }
+        
+        return '$' . number_format($minPrice, 2) . ' - $' . number_format($maxPrice, 2);
+    }
+
+    /**
+     * Check if product has multiple weight options
+     */
+    public function hasMultipleWeights(): bool
+    {
+        $baseWeightCount = $this->weight ? 1 : 0;
+        $variantCount = $this->weightVariants()->count();
+        return ($baseWeightCount + $variantCount) > 1;
+    }
+
+    /**
+     * Get display price based on current context
+     */
+    public function getDisplayPriceAttribute(): string
+    {
+        return '$' . number_format($this->price, 2);
+    }
+
+    /**
+     * Get available weight options for this product.
+     */
+    public function getAvailableWeightOptionsAttribute()
+    {
+        return $this->availableWeightVariants->map(function ($variant) {
+            return [
+                'id' => $variant->id,
+                'label' => $variant->effective_label,
+                'price' => $variant->price,
+                'formatted_price' => '$' . number_format($variant->price, 2),
+                'weight' => $variant->effective_weight,
+                'formatted_weight' => $variant->formatted_weight,
+            ];
+        });
     }
 }

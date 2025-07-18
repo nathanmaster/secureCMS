@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "securecms/securecms",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "SecureCMS - A secure content management system built with Laravel framework.",
+    "keywords": ["securecms", "cms", "laravel", "framework"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
