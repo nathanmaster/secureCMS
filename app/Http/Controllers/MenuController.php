@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductComment;
 use App\Models\ProductRating;
 use App\Models\DefaultWeightOption;
+use App\Models\Subcategory;
 use App\Services\ProductFilterService;
 use Illuminate\Http\Request;
 
@@ -24,55 +25,170 @@ class MenuController extends Controller
      */
     public function index(Request $request)
     {
-        // Debug: Add some logging
-        \Log::info('Menu index called');
-        
         try {
-            // Simplified version for testing
-            $categories = \App\Models\Category::with(['products' => function($query) {
-                if (!auth()->check() || !auth()->user()->is_admin) {
-                    $query->where('is_available', true);
+            // Get all categories and subcategories for filters
+            $allCategories = Category::orderBy('name')->get();
+            $allSubcategories = Subcategory::with('category')->orderBy('name')->get();
+            $dynamicWeightOptions = DefaultWeightOption::where('is_active', true)->orderBy('sort_order')->get();
+            
+            // Build the products query
+            $query = Product::with(['category', 'subcategory', 'ratings', 'availableWeightVariants.defaultWeightOption']);
+            
+            // Apply availability filter (non-admin users only see available products)
+            if (!auth()->check() || !auth()->user()->is_admin) {
+                $query->where('is_available', true);
+            }
+            
+            // Apply search filter
+            if ($request->filled('search')) {
+                $search = $request->get('search');
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'LIKE', "%{$search}%")
+                      ->orWhere('description', 'LIKE', "%{$search}%");
+                });
+            }
+            
+            // Apply category filter
+            if ($request->filled('category')) {
+                $query->where('category_id', $request->get('category'));
+            }
+            
+            // Apply subcategory filter
+            if ($request->filled('subcategory')) {
+                $query->where('subcategory_id', $request->get('subcategory'));
+            }
+            
+            // Apply price range filter
+            if ($request->filled('min_price')) {
+                $minPrice = $request->get('min_price');
+                $query->where(function($q) use ($minPrice) {
+                    $q->where('price', '>=', $minPrice)
+                      ->orWhereHas('availableWeightVariants', function($variant) use ($minPrice) {
+                          $variant->where('price', '>=', $minPrice);
+                      });
+                });
+            }
+            
+            if ($request->filled('max_price')) {
+                $maxPrice = $request->get('max_price');
+                $query->where(function($q) use ($maxPrice) {
+                    $q->where('price', '<=', $maxPrice)
+                      ->orWhereHas('availableWeightVariants', function($variant) use ($maxPrice) {
+                          $variant->where('price', '<=', $maxPrice);
+                      });
+                });
+            }
+            
+            // Apply THC percentage range filter
+            if ($request->filled('min_percentage')) {
+                $query->where('percentage', '>=', $request->get('min_percentage'));
+            }
+            
+            if ($request->filled('max_percentage')) {
+                $query->where('percentage', '<=', $request->get('max_percentage'));
+            }
+              // Apply weight options filter - this is now the primary filter
+            $selectedWeightOptions = $request->get('weight_options', []);
+            
+            // Apply sorting
+            $sortBy = $request->get('sort_by', 'name');
+            $sortDirection = $request->get('sort_direction', 'asc');
+            
+            switch ($sortBy) {
+                case 'price':
+                    $query->orderBy('price', $sortDirection);
+                    break;
+                case 'percentage':
+                    $query->orderBy('percentage', $sortDirection);
+                    break;
+                case 'name':
+                default:
+                    $query->orderBy('name', $sortDirection);
+                    break;
+            }
+
+            // Get all products first
+            $allProducts = $query->get();
+            
+            // Apply advanced filtering based on weight and price interactions
+            $filteredProducts = $allProducts->filter(function($product) use ($selectedWeightOptions, $request) {
+                // If weight options are selected, filter products accordingly
+                if (!empty($selectedWeightOptions)) {
+                    $availableVariants = $product->availableWeightVariants->whereIn('default_weight_option_id', $selectedWeightOptions);
+                    
+                    // Hide products that don't have any of the selected weight options
+                    if ($availableVariants->isEmpty()) {
+                        return false;
+                    }
+                    
+                    // Update the product's available weight variants to only show selected weights
+                    $product->filteredWeightVariants = $availableVariants;
+                    
+                    // Apply price filter only to the selected weight variants
+                    if ($request->filled('min_price') || $request->filled('max_price')) {
+                        $minPrice = $request->get('min_price');
+                        $maxPrice = $request->get('max_price');
+                        
+                        $priceFilteredVariants = $availableVariants->filter(function($variant) use ($minPrice, $maxPrice) {
+                            if ($minPrice !== null && $variant->price < $minPrice) {
+                                return false;
+                            }
+                            if ($maxPrice !== null && $variant->price > $maxPrice) {
+                                return false;
+                            }
+                            return true;
+                        });
+                        
+                        // If no variants pass the price filter, hide the product
+                        if ($priceFilteredVariants->isEmpty()) {
+                            return false;
+                        }
+                        
+                        $product->filteredWeightVariants = $priceFilteredVariants;
+                    }
+                } else {
+                    // No weight filter selected, use original logic
+                    $product->filteredWeightVariants = $product->availableWeightVariants;
                 }
-                $query->with(['ratings', 'weightVariants']);
-            }])->orderBy('name')->get();
+                
+                return true;
+            });
             
-            $uncategorizedProducts = \App\Models\Product::whereNull('category_id')
-                ->when(!auth()->check() || !auth()->user()->is_admin, function ($query) {
-                    $query->where('is_available', true);
-                })
-                ->with(['ratings', 'weightVariants'])
-                ->orderBy('name')
-                ->get();
+            // Group filtered products by category
+            $categories = $allCategories->filter(function($category) use ($filteredProducts) {
+                return $filteredProducts->where('category_id', $category->id)->count() > 0;
+            })->map(function($category) use ($filteredProducts) {
+                $category->products = $filteredProducts->where('category_id', $category->id);
+                return $category;
+            });
             
-            $allCategories = \App\Models\Category::orderBy('name')->get();
-            $allSubcategories = \App\Models\Subcategory::with('category')->orderBy('name')->get();
+            // Get uncategorized products from filtered results
+            $uncategorizedProducts = $filteredProducts->whereNull('category_id');
             
-            // Simple price range
+            // Calculate price range from filtered products and their allowed variants
+            $allPrices = collect();
+            foreach ($filteredProducts as $product) {
+                if (isset($product->filteredWeightVariants) && $product->filteredWeightVariants->isNotEmpty()) {
+                    $allPrices = $allPrices->merge($product->filteredWeightVariants->pluck('price'));
+                } else {
+                    $allPrices->push($product->price);
+                }
+            }
+            
             $priceRange = (object) [
-                'min_price' => 0,
-                'max_price' => 100
+                'min_price' => $allPrices->min() ?? 0,
+                'max_price' => $allPrices->max() ?? 200
             ];
             
-            $dynamicWeightOptions = \App\Models\DefaultWeightOption::where('is_active', true)->orderBy('value')->get();
-            
-            return view('menu', [
-                'categories' => $categories,
-                'uncategorizedProducts' => $uncategorizedProducts,
-                'allCategories' => $allCategories,
-                'allSubcategories' => $allSubcategories,
-                'priceRange' => $priceRange,
-                'dynamicWeightOptions' => $dynamicWeightOptions,
-                'categoryFilter' => $request->get('category'),
-                'subcategoryFilter' => $request->get('subcategory'),
-                'minPrice' => $request->get('min_price'),
-                'maxPrice' => $request->get('max_price'),
-                'minPercentage' => $request->get('min_percentage'),
-                'maxPercentage' => $request->get('max_percentage'),
-                'selectedWeight' => $request->get('selected_weight'),
-                'sortBy' => $request->get('sort_by', 'name'),
-                'sortDirection' => $request->get('sort_direction', 'asc'),
-                'viewMode' => $request->get('view_mode', 'grid')
-            ]);
+            return view('menu', compact(
+                'categories',
+                'uncategorizedProducts',
+                'allCategories',
+                'allSubcategories',
+                'dynamicWeightOptions',
+                'priceRange',
+                'selectedWeightOptions'
+            ));
         
         } catch (\Exception $e) {
             \Log::error('Menu index error: ' . $e->getMessage());
