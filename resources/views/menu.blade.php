@@ -93,14 +93,14 @@
                     <!-- Price Range Slider -->
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">Price Range</label>
-                        <div class="px-3 py-2">
+                        <div class="slider-container">
                             <div class="relative">
                                 <input type="range" id="price-min" name="min_price" min="0" max="200" value="{{ request('min_price', $priceRange->min_price) }}" 
-                                       class="absolute w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                       class="absolute w-full h-2 bg-gray-900 border border-gray-600 rounded-lg appearance-none cursor-pointer slider-thumb">
                                 <input type="range" id="price-max" name="max_price" min="0" max="200" value="{{ request('max_price', $priceRange->max_price) }}" 
-                                       class="absolute w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                       class="absolute w-full h-2 bg-gray-900 border border-gray-600 rounded-lg appearance-none cursor-pointer slider-thumb">
                             </div>
-                            <div class="flex justify-between text-sm text-gray-400 mt-6">
+                            <div class="flex justify-between text-sm text-gray-300 mt-6 font-medium">
                                 <span>$<span id="price-min-value">{{ request('min_price', $priceRange->min_price) }}</span></span>
                                 <span>$<span id="price-max-value">{{ request('max_price', $priceRange->max_price) }}</span></span>
                             </div>
@@ -110,14 +110,14 @@
                     <!-- THC Percentage Range Slider -->
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">THC Percentage Range</label>
-                        <div class="px-3 py-2">
+                        <div class="slider-container">
                             <div class="relative">
                                 <input type="range" id="thc-min" name="min_percentage" min="0" max="40" value="{{ request('min_percentage', 0) }}" 
-                                       class="absolute w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                       class="absolute w-full h-2 bg-gray-900 border border-gray-600 rounded-lg appearance-none cursor-pointer slider-thumb">
                                 <input type="range" id="thc-max" name="max_percentage" min="0" max="40" value="{{ request('max_percentage', 40) }}" 
-                                       class="absolute w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                       class="absolute w-full h-2 bg-gray-900 border border-gray-600 rounded-lg appearance-none cursor-pointer slider-thumb">
                             </div>
-                            <div class="flex justify-between text-sm text-gray-400 mt-6">
+                            <div class="flex justify-between text-sm text-gray-300 mt-6 font-medium">
                                 <span><span id="thc-min-value">{{ request('min_percentage', 0) }}</span>%</span>
                                 <span><span id="thc-max-value">{{ request('max_percentage', 40) }}</span>%</span>
                             </div>
@@ -374,6 +374,9 @@
             height: 0;
             width: 200px;
             outline: none;
+            background: linear-gradient(to right, #1F2937 0%, #1F2937 100%);
+            border: 1px solid #4B5563;
+            border-radius: 5px;
         }
         
         .slider-thumb::-webkit-slider-thumb {
@@ -401,15 +404,17 @@
         }
         
         .slider-thumb::-webkit-slider-track {
-            background: #374151;
+            background: #1F2937;
             height: 5px;
             border-radius: 5px;
+            border: 1px solid #4B5563;
         }
         
         .slider-thumb::-moz-range-track {
-            background: #374151;
+            background: #1F2937;
             height: 5px;
             border-radius: 5px;
+            border: 1px solid #4B5563;
         }
         
         .slider-thumb:focus {
@@ -422,6 +427,29 @@
         
         .slider-thumb:focus::-moz-range-thumb {
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+        }
+        
+        /* Additional slider styling for better visibility */
+        .slider-thumb::-webkit-slider-runnable-track {
+            background: #1F2937;
+            height: 5px;
+            border-radius: 5px;
+            border: 1px solid #4B5563;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .slider-thumb::-moz-range-progress {
+            background: #8B5CF6;
+            height: 5px;
+            border-radius: 5px;
+        }
+        
+        /* Container styling for better contrast */
+        .slider-container {
+            background: rgba(31, 41, 55, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #374151;
         }
     </style>
     @endpush
@@ -542,7 +570,7 @@
                     }
                 });
                 
-                // Update price range sliders based on available prices
+                // Update price range sliders based on available prices - but don't constrain user input
                 if (availablePrices.length > 0) {
                     const minPrice = Math.min(...availablePrices);
                     const maxPrice = Math.max(...availablePrices);
@@ -551,21 +579,25 @@
                     const priceMaxSlider = document.getElementById('price-max');
                     
                     if (priceMinSlider && priceMaxSlider) {
-                        // Update slider bounds
-                        priceMinSlider.min = Math.floor(minPrice);
+                        // Update slider bounds to allow full range from 0 to the maximum available price
+                        priceMinSlider.min = 0;
                         priceMinSlider.max = Math.ceil(maxPrice);
-                        priceMaxSlider.min = Math.floor(minPrice);
+                        priceMaxSlider.min = 0;
                         priceMaxSlider.max = Math.ceil(maxPrice);
                         
-                        // Reset values if they're outside the new range
-                        if (parseFloat(priceMinSlider.value) < minPrice) {
+                        // Only update values if they haven't been set by user or are outside the available range
+                        const currentMinValue = parseFloat(priceMinSlider.value);
+                        const currentMaxValue = parseFloat(priceMaxSlider.value);
+                        
+                        // Don't reset user's price selection unless it's completely outside the available range
+                        if (currentMinValue > maxPrice) {
                             priceMinSlider.value = Math.floor(minPrice);
                         }
-                        if (parseFloat(priceMaxSlider.value) > maxPrice) {
+                        if (currentMaxValue > Math.ceil(maxPrice)) {
                             priceMaxSlider.value = Math.ceil(maxPrice);
                         }
                         
-                        // Update displayed values
+                        // Update displayed values to reflect current slider positions
                         document.getElementById('price-min-value').textContent = priceMinSlider.value;
                         document.getElementById('price-max-value').textContent = priceMaxSlider.value;
                     }
@@ -577,8 +609,14 @@
                 checkbox.addEventListener('change', updateWeightSelectors);
             });
             
-            // Initialize weight selectors on page load
-            updateWeightSelectors();
+            // Initialize weight selectors on page load only if no weight filters are active from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasWeightFilters = urlParams.getAll('weight_options[]').length > 0;
+            
+            // Only run initial update if no weight filters are set in URL, or if we need to initialize the display
+            if (!hasWeightFilters || document.querySelectorAll('input[name="weight_options[]"]:checked').length === 0) {
+                updateWeightSelectors();
+            }
             
             // Sort functionality
             window.updateSort = function() {

@@ -58,27 +58,6 @@ class MenuController extends Controller
                 $query->where('subcategory_id', $request->get('subcategory'));
             }
             
-            // Apply price range filter
-            if ($request->filled('min_price')) {
-                $minPrice = $request->get('min_price');
-                $query->where(function($q) use ($minPrice) {
-                    $q->where('price', '>=', $minPrice)
-                      ->orWhereHas('availableWeightVariants', function($variant) use ($minPrice) {
-                          $variant->where('price', '>=', $minPrice);
-                      });
-                });
-            }
-            
-            if ($request->filled('max_price')) {
-                $maxPrice = $request->get('max_price');
-                $query->where(function($q) use ($maxPrice) {
-                    $q->where('price', '<=', $maxPrice)
-                      ->orWhereHas('availableWeightVariants', function($variant) use ($maxPrice) {
-                          $variant->where('price', '<=', $maxPrice);
-                      });
-                });
-            }
-            
             // Apply THC percentage range filter
             if ($request->filled('min_percentage')) {
                 $query->where('percentage', '>=', $request->get('min_percentage'));
@@ -121,9 +100,6 @@ class MenuController extends Controller
                         return false;
                     }
                     
-                    // Update the product's available weight variants to only show selected weights
-                    $product->filteredWeightVariants = $availableVariants;
-                    
                     // Apply price filter only to the selected weight variants
                     if ($request->filled('min_price') || $request->filled('max_price')) {
                         $minPrice = $request->get('min_price');
@@ -145,10 +121,49 @@ class MenuController extends Controller
                         }
                         
                         $product->filteredWeightVariants = $priceFilteredVariants;
+                    } else {
+                        $product->filteredWeightVariants = $availableVariants;
                     }
                 } else {
-                    // No weight filter selected, use original logic
-                    $product->filteredWeightVariants = $product->availableWeightVariants;
+                    // No weight filter selected, apply price filter to all variants
+                    if ($request->filled('min_price') || $request->filled('max_price')) {
+                        $minPrice = $request->get('min_price');
+                        $maxPrice = $request->get('max_price');
+                        
+                        // Check if product's base price is in range
+                        $baseInRange = true;
+                        if ($minPrice !== null && $product->price < $minPrice) {
+                            $baseInRange = false;
+                        }
+                        if ($maxPrice !== null && $product->price > $maxPrice) {
+                            $baseInRange = false;
+                        }
+                        
+                        // Check if any weight variants are in range
+                        $variantsInRange = $product->availableWeightVariants->filter(function($variant) use ($minPrice, $maxPrice) {
+                            if ($minPrice !== null && $variant->price < $minPrice) {
+                                return false;
+                            }
+                            if ($maxPrice !== null && $variant->price > $maxPrice) {
+                                return false;
+                            }
+                            return true;
+                        });
+                        
+                        // Hide product if neither base price nor any variants are in range
+                        if (!$baseInRange && $variantsInRange->isEmpty()) {
+                            return false;
+                        }
+                        
+                        // If variants are in range, filter them
+                        if (!$variantsInRange->isEmpty()) {
+                            $product->filteredWeightVariants = $variantsInRange;
+                        } else {
+                            $product->filteredWeightVariants = collect();
+                        }
+                    } else {
+                        $product->filteredWeightVariants = $product->availableWeightVariants;
+                    }
                 }
                 
                 return true;
