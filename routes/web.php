@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicProductController;
 use Illuminate\Support\Facades\Route;
 
 // Default route - Menu page for all users (guests and logged in)
@@ -75,9 +76,12 @@ Route::get('/product/{product}', [MenuController::class, 'show'])->name('product
 // AJAX route for getting product price by weight
 Route::get('/product/{product}/price', [MenuController::class, 'getProductPrice'])->name('product.price');
 
+// Product routes
+Route::get('/product/{product}', [PublicProductController::class, 'show'])->name('product.show');
+
 // Product comments and ratings (authenticated users only)
 Route::middleware('auth')->group(function () {
-    Route::post('/product/{product}/comment', [MenuController::class, 'storeComment'])->name('product.comment');
+    Route::post('/product/{product}/comment', [PublicProductController::class, 'storeComment'])->name('product.comment');
     
     // Wishlist routes
     Route::get('/wishlist', [\App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');

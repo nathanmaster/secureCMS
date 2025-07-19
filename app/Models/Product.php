@@ -69,6 +69,14 @@ class Product extends Model
     }
 
     /**
+     * Get the average rating for the product.
+     */
+    public function getAverageRatingAttribute(): float
+    {
+        return $this->ratings()->avg('rating') ?? 0;
+    }
+
+    /**
      * Get the weight variants for the product.
      */
     public function weightVariants(): HasMany
@@ -110,14 +118,6 @@ class Product extends Model
     public function getImageOrDefaultAttribute(): string
     {
         return $this->image_path ? asset('storage/' . $this->image_path) : asset('images/product-placeholder.svg');
-    }
-
-    /**
-     * Get the average rating for the product.
-     */
-    public function getAverageRatingAttribute(): float
-    {
-        return $this->ratings()->avg('rating') ?? 0;
     }
 
     /**
