@@ -76,25 +76,35 @@
                         <!-- Weight Variants Section -->
                         <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
                             <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Weight-Based Pricing</h3>
-                                <button type="button" onclick="addWeightVariant()" class="bg-green-500 hover:bg-green-700 text-white text-sm font-bold py-2 px-4 rounded inline-flex items-center">
+                                <div>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Weight-Based Pricing</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Configure different prices for different weight options. Leave empty to use base price only.</p>
+                                </div>
+                                <button type="button" onclick="addWeightVariant()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                     </svg>
                                     Add Weight Option
                                 </button>
                             </div>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Configure different prices for different weights. Leave empty to use base price only.</p>
                             
                             <!-- Weight Variants Table -->
-                            <div class="overflow-hidden border border-gray-200 dark:border-gray-600 rounded-lg">
+                            <div class="overflow-hidden border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm">
                                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
                                     <thead class="bg-gray-50 dark:bg-gray-800">
                                         <tr>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Weight Option</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Price</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Available</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-2/5">
+                                                Weight Configuration
+                                            </th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-1/5">
+                                                Price
+                                            </th>
+                                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-1/5">
+                                                Availability
+                                            </th>
+                                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-1/5">
+                                                Actions
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody id="weight-variants-container" class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
@@ -103,66 +113,102 @@
                                 </table>
                                 
                                 <!-- Empty state -->
-                                <div id="weight-variants-empty" class="text-center py-8 bg-white dark:bg-gray-700">
-                                    <p class="text-gray-500 dark:text-gray-400">No weight options added yet. Click "Add Weight Option" to get started.</p>
+                                <div id="weight-variants-empty" class="text-center py-12 bg-white dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-4-4m0 0l-4 4m4-4v18"></path>
+                                    </svg>
+                                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No weight options</h3>
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by adding a weight option for this product.</p>
+                                    <div class="mt-6">
+                                        <button type="button" onclick="addWeightVariant()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                            </svg>
+                                            Add Weight Option
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             
-                            <!-- Template for weight variant (hidden) -->
-                            <div id="weight-variant-template" class="hidden">
-                                <tr class="weight-variant-item">
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                            <!-- Template for weight variant (hidden - template will be cloned and modified) -->
+                            <template id="weight-variant-template">
+                                <tr class="weight-variant-item bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                                    <td class="px-4 py-4">
                                         <div class="space-y-3">
-                                            <div class="flex items-center space-x-3">
-                                                <label class="flex items-center">
-                                                    <input type="radio" name="weight_variants[INDEX][type]" value="default" class="text-blue-600 focus:ring-blue-500" onchange="toggleWeightType(this)" checked>
-                                                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Default Option</span>
+                                            <!-- Weight Type Selection -->
+                                            <div class="space-y-2">
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="radio" name="weight_variants[INDEX][type]" value="default" 
+                                                           class="text-blue-600 focus:ring-blue-500 focus:ring-2" 
+                                                           onchange="toggleWeightType(this)" checked disabled>
+                                                    <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">Use Default Option</span>
                                                 </label>
+                                                
+                                                <select name="weight_variants[INDEX][weight_option_id]" 
+                                                        class="default-weight-select w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm transition-all" disabled>
+                                                    <option value="">Select weight option...</option>
+                                                    @foreach($defaultWeightOptions as $option)
+                                                        <option value="{{ $option->id }}">{{ $option->label }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-                                            <select name="weight_variants[INDEX][weight_option_id]" class="default-weight-select w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm">
-                                                <option value="">Select weight option...</option>
-                                                @foreach($defaultWeightOptions as $option)
-                                                    <option value="{{ $option->id }}">{{ $option->label }}</option>
-                                                @endforeach
-                                            </select>
                                             
-                                            <div class="flex items-center space-x-3">
-                                                <label class="flex items-center">
-                                                    <input type="radio" name="weight_variants[INDEX][type]" value="custom" class="text-blue-600 focus:ring-blue-500" onchange="toggleWeightType(this)">
-                                                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Custom Weight</span>
+                                            <div class="space-y-2">
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="radio" name="weight_variants[INDEX][type]" value="custom" 
+                                                           class="text-blue-600 focus:ring-blue-500 focus:ring-2" 
+                                                           onchange="toggleWeightType(this)" disabled>
+                                                    <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">Custom Weight</span>
                                                 </label>
-                                            </div>
-                                            <div class="custom-weight-inputs space-y-2 hidden">
-                                                <input type="number" name="weight_variants[INDEX][custom_weight]" placeholder="Weight (g)" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm">
-                                                <input type="text" name="weight_variants[INDEX][custom_label]" placeholder="Label (e.g., 250g)" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm">
+                                                
+                                                <div class="custom-weight-inputs space-y-2 hidden">
+                                                    <div class="grid grid-cols-1 gap-2">
+                                                        <input type="number" name="weight_variants[INDEX][custom_weight]" 
+                                                               placeholder="Weight (e.g., 250)" 
+                                                               step="0.01" min="0" 
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm" disabled>
+                                                        <input type="text" name="weight_variants[INDEX][custom_label]" 
+                                                               placeholder="Display label (e.g., 250g, 1oz)" 
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm" disabled>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-4 py-4">
                                         <div class="relative">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <span class="text-gray-500 text-sm">$</span>
+                                                <span class="text-gray-500 dark:text-gray-400 text-sm font-medium">$</span>
                                             </div>
-                                            <input type="number" name="weight_variants[INDEX][price]" step="0.01" min="0" class="block w-full pl-7 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm" placeholder="0.00" required>
+                                            <input type="number" name="weight_variants[INDEX][price]" 
+                                                   step="0.01" min="0" 
+                                                   class="block w-full pl-7 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm" 
+                                                   placeholder="0.00" required disabled>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <label class="flex items-center">
-                                            <input type="hidden" name="weight_variants[INDEX][is_available]" value="0">
-                                            <input type="checkbox" name="weight_variants[INDEX][is_available]" value="1" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Available</span>
-                                        </label>
+                                    <td class="px-4 py-4">
+                                        <div class="flex items-center justify-center">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="hidden" name="weight_variants[INDEX][is_available]" value="0" disabled>
+                                                <input type="checkbox" name="weight_variants[INDEX][is_available]" value="1" checked 
+                                                       class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 focus:ring-2 w-4 h-4" disabled>
+                                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">Available</span>
+                                            </label>
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button type="button" onclick="removeWeightVariant(this)" class="text-red-600 hover:text-red-900 inline-flex items-center">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                            </svg>
-                                            Remove
-                                        </button>
+                                    <td class="px-4 py-4">
+                                        <div class="flex justify-center">
+                                            <button type="button" onclick="removeWeightVariant(this)" 
+                                                    class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800 transition-colors">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                                Remove
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
-                            </div>
+                            </template>
                         </div>
 
                         <!-- Weight -->
@@ -260,7 +306,7 @@
                             </label>
                             
                             <!-- Upload Area -->
-                            <div id="uploadArea" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md hover:border-gray-400 dark:hover:border-gray-500 transition-colors">
+                            <div id="uploadArea" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
                                 <div class="space-y-1 text-center">
                                     <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                                         <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -311,10 +357,10 @@
 
                         <!-- Submit Button -->
                         <div class="flex items-center justify-end space-x-4">
-                            <a href="{{ route('admin.products.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
+                            <a href="{{ route('admin.products.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded transition-colors">
                                 Cancel
                             </a>
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors">
                                 Create Product
                             </button>
                         </div>
@@ -331,36 +377,60 @@
             const container = document.getElementById('weight-variants-container');
             const emptyState = document.getElementById('weight-variants-empty');
             const template = document.getElementById('weight-variant-template');
-            const clone = template.cloneNode(true);
+            
+            if (!template) {
+                console.error('Template not found');
+                return;
+            }
             
             // Hide empty state if this is the first variant
             if (emptyState) {
                 emptyState.style.display = 'none';
             }
             
-            // Update IDs and names with unique index
-            clone.id = '';
-            clone.classList.remove('hidden');
+            // Clone the template content (the <tr> element)
+            const clone = template.content.cloneNode(true);
+            const row = clone.querySelector('tr');
+            
+            if (!row) {
+                console.error('Row not found in template');
+                return;
+            }
             
             // Replace INDEX with actual index in the HTML
-            const html = clone.innerHTML.replace(/INDEX/g, weightVariantIndex);
-            clone.innerHTML = html;
+            row.innerHTML = row.innerHTML.replace(/INDEX/g, weightVariantIndex);
+            
+            // Enable all form inputs (remove disabled attribute)
+            const inputs = row.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.disabled = false;
+            });
             
             // Add required attribute to price field
-            const priceInput = clone.querySelector('input[name*="[price]"]');
+            const priceInput = row.querySelector('input[name*="[price]"]');
             if (priceInput) {
                 priceInput.required = true;
             }
             
-            container.appendChild(clone);
+            // Ensure the default weight option is selected by default
+            const defaultRadio = row.querySelector('input[value="default"]');
+            if (defaultRadio) {
+                defaultRadio.checked = true;
+                // Trigger the toggle to ensure proper initial state
+                toggleWeightType(defaultRadio);
+            }
+            
+            // Append the row to the container
+            container.appendChild(row);
             weightVariantIndex++;
         }
 
         function removeWeightVariant(button) {
-            const row = button.closest('.weight-variant-item');
+            const row = button.closest('tr');
             const container = document.getElementById('weight-variants-container');
             const emptyState = document.getElementById('weight-variants-empty');
             
+            // Remove the row
             row.remove();
             
             // Show empty state if no variants left
@@ -375,20 +445,28 @@
             const customInputs = row.querySelector('.custom-weight-inputs');
             
             if (radio.value === 'default') {
+                // Show default select, hide custom inputs
                 defaultSelect.style.display = 'block';
                 customInputs.classList.add('hidden');
                 defaultSelect.required = true;
+                
+                // Clear and disable custom inputs
                 customInputs.querySelectorAll('input').forEach(input => {
                     input.required = false;
-                    input.value = ''; // Clear custom values
+                    input.value = '';
                 });
-            } else {
+            } else if (radio.value === 'custom') {
+                // Hide default select, show custom inputs
                 defaultSelect.style.display = 'none';
                 customInputs.classList.remove('hidden');
                 defaultSelect.required = false;
-                defaultSelect.value = ''; // Clear default selection
-                customInputs.querySelector('input[type="number"]').required = true;
-                customInputs.querySelector('input[type="text"]').required = true;
+                defaultSelect.value = '';
+                
+                // Enable custom inputs
+                const weightInput = customInputs.querySelector('input[type="number"]');
+                const labelInput = customInputs.querySelector('input[type="text"]');
+                if (weightInput) weightInput.required = true;
+                if (labelInput) labelInput.required = true;
             }
         }
 
@@ -459,35 +537,58 @@
         
         // Add drag and drop functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Form submission debugging
+            // Form submission handling
             const form = document.querySelector('form');
             const submitButton = document.querySelector('button[type="submit"]');
             
             if (form && submitButton) {
-                submitButton.addEventListener('click', function(e) {
-                    console.log('Submit button clicked');
+                form.addEventListener('submit', function(e) {
+                    console.log('Form submit event triggered');
                     
-                    // Check required fields
-                    const requiredFields = form.querySelectorAll('[required]');
-                    let hasErrors = false;
+                    // Check if any weight variants exist and validate them
+                    const container = document.getElementById('weight-variants-container');
+                    const variants = container ? container.querySelectorAll('tr') : [];
                     
-                    requiredFields.forEach(field => {
-                        if (!field.value || field.value.trim() === '') {
-                            console.log('Required field empty:', field.name || field.id);
-                            hasErrors = true;
+                    // If there are variants, validate each one
+                    for (let i = 0; i < variants.length; i++) {
+                        const variant = variants[i];
+                        const defaultRadio = variant.querySelector('input[value="default"]:checked');
+                        const customRadio = variant.querySelector('input[value="custom"]:checked');
+                        const priceInput = variant.querySelector('input[name*="[price]"]');
+                        
+                        // Validate price is filled
+                        if (!priceInput || !priceInput.value || parseFloat(priceInput.value) <= 0) {
+                            alert('Please enter a valid price for all weight variants.');
+                            e.preventDefault();
+                            return false;
                         }
-                    });
-                    
-                    if (hasErrors) {
-                        console.log('Form has validation errors');
-                        return; // Let browser handle validation
+                        
+                        // Validate weight configuration
+                        if (defaultRadio) {
+                            const weightSelect = variant.querySelector('.default-weight-select');
+                            if (!weightSelect || !weightSelect.value) {
+                                alert('Please select a weight option for all default weight variants.');
+                                e.preventDefault();
+                                return false;
+                            }
+                        } else if (customRadio) {
+                            const weightInput = variant.querySelector('input[name*="[custom_weight]"]');
+                            const labelInput = variant.querySelector('input[name*="[custom_label]"]');
+                            if (!weightInput || !weightInput.value || !labelInput || !labelInput.value) {
+                                alert('Please fill in both weight and label for all custom weight variants.');
+                                e.preventDefault();
+                                return false;
+                            }
+                        }
                     }
                     
+                    // Allow form submission if validation passes
                     console.log('Form validation passed, submitting...');
                 });
                 
-                form.addEventListener('submit', function(e) {
-                    console.log('Form submit event triggered');
+                submitButton.addEventListener('click', function(e) {
+                    console.log('Submit button clicked');
+                    // Don't prevent default - let the form submit naturally
                 });
             }
             
@@ -514,11 +615,11 @@
                 });
                 
                 function highlight(e) {
-                    uploadArea.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900');
+                    uploadArea.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20', 'dark:border-indigo-400');
                 }
                 
                 function unhighlight(e) {
-                    uploadArea.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900');
+                    uploadArea.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20', 'dark:border-indigo-400');
                 }
                 
                 uploadArea.addEventListener('drop', handleDrop, false);

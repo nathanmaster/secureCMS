@@ -141,7 +141,7 @@ class Product extends Model
             return number_format($this->weight / 1000, 2) . ' kg';
         }
         
-        return number_format($this->weight, 0) . ' g';
+        return number_format($this->weight, 2) . ' g';
     }
 
     /**

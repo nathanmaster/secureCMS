@@ -78,7 +78,7 @@
                         <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Weight-Based Pricing</h3>
-                                <button type="button" onclick="addWeightVariant()" class="bg-green-500 hover:bg-green-700 text-white text-sm font-bold py-2 px-4 rounded inline-flex items-center">
+                                <button type="button" onclick="addWeightVariant()" class="bg-green-500 hover:bg-green-600 dark:hover:bg-green-700 text-white text-sm font-bold py-2 px-4 rounded inline-flex items-center transition-colors duration-200">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                     </svg>
@@ -101,12 +101,12 @@
                                     <tbody id="weight-variants-container" class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
                                         @if($product->weightVariants->count() > 0)
                                             @foreach($product->weightVariants as $index => $variant)
-                                                <tr class="weight-variant-item">
+                                                <tr class="weight-variant-item hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200">
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <div class="space-y-3">
                                                             <div class="flex items-center space-x-3">
-                                                                <label class="flex items-center">
-                                                                    <input type="radio" name="weight_variants[{{ $index }}][type]" value="default" class="text-blue-600 focus:ring-blue-500" onchange="toggleWeightType(this)" {{ $variant->default_weight_option_id ? 'checked' : '' }}>
+                                                                <label class="flex items-center cursor-pointer">
+                                                                    <input type="radio" name="weight_variants[{{ $index }}][type]" value="default" class="text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" onchange="toggleWeightType(this)" {{ $variant->default_weight_option_id ? 'checked' : '' }}>
                                                                     <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Default Option</span>
                                                                 </label>
                                                             </div>
@@ -118,8 +118,8 @@
                                                             </select>
                                                             
                                                             <div class="flex items-center space-x-3">
-                                                                <label class="flex items-center">
-                                                                    <input type="radio" name="weight_variants[{{ $index }}][type]" value="custom" class="text-blue-600 focus:ring-blue-500" onchange="toggleWeightType(this)" {{ $variant->custom_weight ? 'checked' : '' }}>
+                                                                <label class="flex items-center cursor-pointer">
+                                                                    <input type="radio" name="weight_variants[{{ $index }}][type]" value="custom" class="text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" onchange="toggleWeightType(this)" {{ $variant->custom_weight ? 'checked' : '' }}>
                                                                     <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Custom Weight</span>
                                                                 </label>
                                                             </div>
@@ -132,20 +132,20 @@
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <div class="relative">
                                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                                <span class="text-gray-500 text-sm">$</span>
+                                                                <span class="text-gray-500 dark:text-gray-400 text-sm">$</span>
                                                             </div>
                                                             <input type="number" name="weight_variants[{{ $index }}][price]" value="{{ $variant->price }}" step="0.01" min="0" required class="block w-full pl-7 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm" placeholder="0.00">
                                                         </div>
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
-                                                        <label class="flex items-center">
+                                                        <label class="flex items-center cursor-pointer">
                                                             <input type="hidden" name="weight_variants[{{ $index }}][is_available]" value="0">
-                                                            <input type="checkbox" name="weight_variants[{{ $index }}][is_available]" value="1" {{ $variant->is_available ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                                            <input type="checkbox" name="weight_variants[{{ $index }}][is_available]" value="1" {{ $variant->is_available ? 'checked' : '' }} class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:bg-gray-700">
                                                             <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Available</span>
                                                         </label>
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                        <button type="button" onclick="removeWeightVariant(this)" class="text-red-600 hover:text-red-900 inline-flex items-center">
+                                                        <button type="button" onclick="removeWeightVariant(this)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 inline-flex items-center transition-colors duration-200">
                                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                             </svg>
@@ -171,17 +171,17 @@
                             </div>
                             
                             <!-- Template for weight variant (hidden) -->
-                            <div id="weight-variant-template" class="hidden">
-                                <tr class="weight-variant-item">
+                            <template id="weight-variant-template">
+                                <tr class="weight-variant-item hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="space-y-3">
                                             <div class="flex items-center space-x-3">
-                                                <label class="flex items-center">
-                                                    <input type="radio" name="weight_variants[INDEX][type]" value="default" class="text-blue-600 focus:ring-blue-500" onchange="toggleWeightType(this)" checked>
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="radio" name="weight_variants[INDEX][type]" value="default" class="text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" onchange="toggleWeightType(this)" checked disabled>
                                                     <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Default Option</span>
                                                 </label>
                                             </div>
-                                            <select name="weight_variants[INDEX][weight_option_id]" class="default-weight-select w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm">
+                                            <select name="weight_variants[INDEX][weight_option_id]" class="default-weight-select w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm" disabled>
                                                 <option value="">Select weight option...</option>
                                                 @foreach($defaultWeightOptions as $option)
                                                     <option value="{{ $option->id }}">{{ $option->label }}</option>
@@ -189,34 +189,34 @@
                                             </select>
                                             
                                             <div class="flex items-center space-x-3">
-                                                <label class="flex items-center">
-                                                    <input type="radio" name="weight_variants[INDEX][type]" value="custom" class="text-blue-600 focus:ring-blue-500" onchange="toggleWeightType(this)">
+                                                <label class="flex items-center cursor-pointer">
+                                                    <input type="radio" name="weight_variants[INDEX][type]" value="custom" class="text-blue-600 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" onchange="toggleWeightType(this)" disabled>
                                                     <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Custom Weight</span>
                                                 </label>
                                             </div>
                                             <div class="custom-weight-inputs space-y-2 hidden">
-                                                <input type="number" name="weight_variants[INDEX][custom_weight]" placeholder="Weight (g)" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm">
-                                                <input type="text" name="weight_variants[INDEX][custom_label]" placeholder="Label (e.g., 250g)" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm">
+                                                <input type="number" name="weight_variants[INDEX][custom_weight]" placeholder="Weight (g)" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm" disabled>
+                                                <input type="text" name="weight_variants[INDEX][custom_label]" placeholder="Label (e.g., 250g)" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm" disabled>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="relative">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <span class="text-gray-500 text-sm">$</span>
+                                                <span class="text-gray-500 dark:text-gray-400 text-sm">$</span>
                                             </div>
-                                            <input type="number" name="weight_variants[INDEX][price]" step="0.01" min="0" required class="block w-full pl-7 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm" placeholder="0.00">
+                                            <input type="number" name="weight_variants[INDEX][price]" step="0.01" min="0" required class="block w-full pl-7 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm" placeholder="0.00" disabled>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <label class="flex items-center">
+                                        <label class="flex items-center cursor-pointer">
                                             <input type="hidden" name="weight_variants[INDEX][is_available]" value="0">
-                                            <input type="checkbox" name="weight_variants[INDEX][is_available]" value="1" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <input type="checkbox" name="weight_variants[INDEX][is_available]" value="1" checked class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 dark:bg-gray-700" disabled>
                                             <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Available</span>
                                         </label>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button type="button" onclick="removeWeightVariant(this)" class="text-red-600 hover:text-red-900 inline-flex items-center">
+                                        <button type="button" onclick="removeWeightVariant(this)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 inline-flex items-center transition-colors duration-200">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
@@ -224,7 +224,7 @@
                                         </button>
                                     </td>
                                 </tr>
-                            </div>
+                            </template>
                         </div>
 
                         <!-- Weight -->
@@ -410,25 +410,37 @@
             const container = document.getElementById('weight-variants-container');
             const emptyState = document.getElementById('weight-variants-empty');
             const template = document.getElementById('weight-variant-template');
-            const clone = template.cloneNode(true);
+            
+            if (!template) {
+                console.error('Template not found');
+                return;
+            }
             
             // Hide empty state if this is the first variant
             if (emptyState) {
                 emptyState.style.display = 'none';
             }
             
-            // Update IDs and names with unique index
-            clone.id = '';
-            clone.classList.remove('hidden');
-            clone.innerHTML = clone.innerHTML.replace(/INDEX/g, weightVariantIndex);
+            // Clone the template content (the <tr> element)
+            const clone = template.content.cloneNode(true);
+            const row = clone.querySelector('tr');
             
-            // Add required attribute to price field
-            const priceInput = clone.querySelector('input[name*="[price]"]');
-            if (priceInput) {
-                priceInput.required = true;
+            if (!row) {
+                console.error('Row not found in template');
+                return;
             }
             
-            container.appendChild(clone);
+            // Replace INDEX with the current index
+            row.innerHTML = row.innerHTML.replace(/INDEX/g, weightVariantIndex);
+            
+            // Enable all form fields in the clone
+            const fields = row.querySelectorAll('input, select');
+            fields.forEach(field => {
+                field.disabled = false;
+            });
+            
+            // Add the row directly to the container
+            container.appendChild(row);
             weightVariantIndex++;
         }
 

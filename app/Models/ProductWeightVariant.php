@@ -83,7 +83,7 @@ class ProductWeightVariant extends Model
             if ($this->custom_weight >= 1000) {
                 return number_format($this->custom_weight / 1000, 2) . ' kg';
             }
-            return number_format($this->custom_weight, 0) . ' g';
+            return number_format($this->custom_weight, 2) . ' g';
         }
 
         return $this->defaultWeightOption?->label ?? 'Custom Weight';
